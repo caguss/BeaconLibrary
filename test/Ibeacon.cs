@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using UniversalBeacon.Library.Core.Interop;
+using Windows.Devices.Bluetooth.Advertisement;
 
 namespace test
 {

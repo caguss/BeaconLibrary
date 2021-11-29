@@ -4,6 +4,8 @@ using System.Diagnostics;
 using OpenNETCF.IoC;
 using UniversalBeacon.Library.Core.Entities;
 using UniversalBeacon.Library.Core.Interfaces;
+using UniversalBeacon.Library.Core.Interop;
+using Windows.Devices.Bluetooth.Advertisement;
 using Xamarin.Forms;
 
 namespace test
@@ -15,7 +17,7 @@ namespace test
         public BeaconService()
         {
             // get the platform-specific provider
-            var provider = RootWorkItem.Services.Get<Ibeacon>();
+            //var provider = RootWorkItem.Services.Get<Ibeacon>();
             var provider1 = DependencyService.Get<Ibeacon>();
 
             if (null != provider1)
@@ -25,7 +27,7 @@ namespace test
                 _manager.Start();
 #if DEBUG
                 _manager.BeaconAdded += _manager_BeaconAdded;
-                provider.AdvertisementPacketReceived += Provider_AdvertisementPacketReceived;
+                provider1.AdvertisementPacketReceived += Provider_AdvertisementPacketReceived;
 #endif // DEBUG
             }
         }
@@ -40,12 +42,12 @@ namespace test
 #if DEBUG
         void _manager_BeaconAdded(object sender, Beacon e)
         {
-            Debug.WriteLine($"_manager_BeaconAdded {sender} Beacon {e}");
+            Debug.WriteLine($"_manager_BeaconAdded {sender} Beacon {e.BluetoothAddress}");
         }
 
-        void Provider_AdvertisementPacketReceived(object sender, UniversalBeacon.Library.Core.Interop.BLEAdvertisementPacketArgs e)
+        void Provider_AdvertisementPacketReceived(object sender, BLEAdvertisementPacketArgs e)
         {
-            Debug.WriteLine($"Provider_AdvertisementPacketReceived {sender} Beacon {e}");
+            Debug.WriteLine($"PacketReceived {sender} Beacon {e.Data.BluetoothAddress}");
         }
 #endif // DEBUG
     }

@@ -5,6 +5,7 @@ using UniversalBeacon.Library.Core.Interop;
 using Xamarin.Forms;
 using UniversalBeacon.Library.UWP;
 using test;
+using System.Runtime.InteropServices.WindowsRuntime;
 
 [assembly: Dependency(typeof(_WindowsBluetoothPacketProvider))]
 namespace UniversalBeacon.Library.UWP
@@ -48,9 +49,56 @@ namespace UniversalBeacon.Library.UWP
 
         private void WatcherOnReceived(BluetoothLEAdvertisementWatcher sender, BluetoothLEAdvertisementReceivedEventArgs eventArgs)
         {
-            //AdvertisementPacketReceived?.Invoke(this, new BLEAdvertisementPacketArgs(eventArgs.ToUniversalBLEPacket()));
-        }
+            if (eventArgs.Advertisement == null) return;
 
+            var result = new BLEAdvertisement
+            {
+                LocalName = eventArgs.Advertisement.LocalName
+            };
+
+            result.ServiceUuids.AddRange(eventArgs.Advertisement.ServiceUuids);
+
+            if (eventArgs.Advertisement.DataSections != null)
+            {
+                foreach (var curDataSection in eventArgs.Advertisement.DataSections)
+                {
+                    var data = new BLEAdvertisementDataSection
+                    {
+                        DataType = curDataSection.DataType,
+                        Data = curDataSection.Data.ToArray()
+                    };
+
+                    result.DataSections.Add(data);
+                }
+            }
+
+            if (eventArgs.Advertisement.ManufacturerData != null)
+            {
+                foreach (var curManufacturerData in eventArgs.Advertisement.ManufacturerData)
+                {
+                    var data = new BLEManufacturerData
+                    {
+                        CompanyId = curManufacturerData.CompanyId,
+                        Data = curManufacturerData.Data.ToArray()
+                    };
+
+                    result.ManufacturerData.Add(data);
+                }
+            }
+
+
+            var packet = new BLEAdvertisementPacket
+            {
+                Timestamp = eventArgs.Timestamp,
+                BluetoothAddress = eventArgs.BluetoothAddress,
+                RawSignalStrengthInDBm = eventArgs.RawSignalStrengthInDBm,
+                AdvertisementType = (BLEAdvertisementType)eventArgs.AdvertisementType,
+                Advertisement = result
+            };
+
+            AdvertisementPacketReceived?.Invoke(this, new BLEAdvertisementPacketArgs(packet));
+        }
+      
         public void Start()
         {
             if (_running) return;
@@ -82,5 +130,7 @@ namespace UniversalBeacon.Library.UWP
                 _running = false;
             }
         }
+
+
     }
 }
