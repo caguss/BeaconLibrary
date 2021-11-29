@@ -1,0 +1,27 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:local="clr-namespace:test"
+             x:Class="test.MainPage">
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <local:FrameTemplateSelector x:Key="FrameTemplateSelector" />
+        </ResourceDictionary>
+    </ContentPage.Resources>
+    <ContentPage.Content>
+        <StackLayout>
+            <Frame BackgroundColor="#2196F3" Padding="24" CornerRadius="0">
+            <Label Text="BeaconList" HorizontalTextAlignment="Center" TextColor="White" FontSize="36"/>
+        </Frame>
+        <ListView
+                ItemTemplate="{StaticResource FrameTemplateSelector}" 
+                ItemsSource="{Binding Beacons}"
+                SelectedItem="{Binding SelectedBeacon}"
+                HasUnevenRows="True">
+        </ListView>
+        <Frame>
+            <Button x:Name="btnSearch" Text="Search" Padding="20" Clicked="Button_Clicked"></Button>
+        </Frame>
+    </StackLayout>
+    </ContentPage.Content>
+</ContentPage>
